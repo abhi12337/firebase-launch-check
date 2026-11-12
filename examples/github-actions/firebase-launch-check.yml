@@ -1,0 +1,32 @@
+# Copy to .github/workflows/firebase-launch-check.yml in a repo that holds a Firebase project.
+# Static only: it reads the checked-out files and never contacts Firebase.
+name: firebase-launch-check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  firebase-launch-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Pin to a release tag or commit of firebase-launch-check you have reviewed.
+      - run: pipx install "git+https://github.com/OWNER/firebase-launch-check@v0.1.0"
+      - name: Check rules, keys and client code (fails on high/critical)
+        run: firebase-launch-check scan . --no-color --fail-on high
+      - name: JSON report artifact
+        if: always()
+        run: firebase-launch-check scan . --json --fail-on never > firebase-launch-check.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: firebase-launch-check-report
+          path: firebase-launch-check.json

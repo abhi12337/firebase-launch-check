@@ -1,0 +1,14 @@
+{
+  "rules": {
+    ".read": "now < 4102444800000",
+    ".write": "now < 4102444800000",
+    "chat": {
+      ".write": true
+    },
+    "presence": {
+      "$uid": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && !('role' in request.resource.data);
+      allow update: if isOwner(userId)
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+      allow delete: if false;
+    }
+
+    match /posts/{postId} {
+      allow read: if true;   // firebase-launch-check: ignore  (blog posts are public)
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.authorId;
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.authorId;
+    }
+
+    match /comments/{commentId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+    }
+
+    match /adminLogs/{logId} {
+      allow read: if isAdmin();
+    }
+
+    match /users/{userId}/{document=**} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}

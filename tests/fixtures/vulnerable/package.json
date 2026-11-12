@@ -1,0 +1,14 @@
+{
+  "name": "shop-demo",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "firebase": "^11.0.0",
+    "firebase-admin": "^13.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
