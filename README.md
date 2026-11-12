@@ -28,6 +28,7 @@ CI-friendly exit codes.
 ## Quick start
 
 ```bash
+pipx install git+https://github.com/abhi12337/firebase-launch-check   # straight from GitHub
 pipx install .                                  # from a clone of this repo (or: pip install .)
 
 firebase-launch-check scan                      # current folder
